@@ -3,7 +3,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace MyLibYAP
+namespace MyLibYAP.iounit
 {
     public class Print
     {

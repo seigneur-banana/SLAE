@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyLibYAP
+namespace MyLibYAP.utils
 {
     public class Determinant
     {

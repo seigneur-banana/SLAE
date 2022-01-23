@@ -1,7 +1,8 @@
-﻿using System;
+﻿using MyLibYAP.utils;
+using System;
 using System.IO;
 
-namespace MyLibYAP
+namespace MyLibYAP.iounit
 {
     public class File
     {
