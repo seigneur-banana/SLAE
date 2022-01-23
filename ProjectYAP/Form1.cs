@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MyLibYAP;
+using MyLibYAP.iounit;
+using MyLibYAP.calculations;
+using MyLibYAP.utils;
 
 namespace ProjectYAP
 {
@@ -19,7 +21,7 @@ namespace ProjectYAP
         public Form1()
         {
             InitializeComponent();
-            matrix = new Matrix();
+            matrix = new GaussMethod(2);
             openFileDialog1.Filter = "Text files(*.txt)|*.txt|All files(*.*)|*.*";
             saveFileDialog1.Filter = "Text files(*.txt)|*.txt|All files(*.*)|*.*";
         }
@@ -33,10 +35,10 @@ namespace ProjectYAP
             {
                 label1.Text = "Результат:";
                 int n = Convert.ToInt32(numericUpDown1.Text);
-                matrix = new Matrix(n);
+                matrix = new GaussMethod(n);
                 matrix.Change(dgv, n);
 
-                Rank rank = new Rank(matrix.A, matrix.B, matrix.N);
+                Rank rank = new Rank(matrix.a, matrix.b, matrix.n);
                 int rank_a2 = rank.Rank_a2(),
                     rank_a = rank.Rank_a();
    
@@ -54,11 +56,13 @@ namespace ProjectYAP
                     }
                     else
                     {
-                        x = matrix.gauss(); //Вычисление корней(решений) СЛАУ методом Гаусса
-                        Determinant det = new Determinant(matrix.A);
-                        if (matrix.Error == true && det.Determinate() != 0) //вычисление матричным методом в случае ошибки
+                        x = matrix.calculate(); //Вычисление корней(решений) СЛАУ методом Гаусса
+                        Determinant det = new Determinant(matrix.a);
+                        if (matrix.error == true && det.Determinate() != 0) //вычисление матричным методом в случае ошибки
                         {
-                                x = matrix.inverse_method();
+                            Matrix matrix1 = new InverseMethod(n);
+                            matrix1.Change(dgv, n);
+                            x = matrix1.calculate();
                         }
                         for (int i = 0; i < n; i++)
                             label1.Text += "\nx[" + (i + 1) + "] = " + x[i].ToString("F2");
@@ -79,7 +83,7 @@ namespace ProjectYAP
             try
             {
                 matrix.Change(dgv, Convert.ToInt32(numericUpDown1.Text));
-                Determinant det = new Determinant(matrix.A);
+                Determinant det = new Determinant(matrix.a);
                 label2.Text = "Определитель:  " + det.Determinate().ToString("F2");
             }
             catch
@@ -102,7 +106,7 @@ namespace ProjectYAP
         private void dgv_CellValueChanged(object sender, DataGridViewCellEventArgs e)
             //Событие срабатывает при изменении любой ячейки в dataGridView
         {
-            matrix = new Matrix(Convert.ToInt32(numericUpDown1.Text));
+            matrix = new GaussMethod(Convert.ToInt32(numericUpDown1.Text));
         }
 
         /// <summary>
@@ -116,7 +120,7 @@ namespace ProjectYAP
                     File file = new File();
                     file.ReadFile(openFileDialog1.FileName);
                     Print print = new Print(file.A, file.B, file.X, file.N, file.Error);
-                    matrix = new Matrix(file.A, file.B, file.X, file.N, file.Error);
+                    matrix = new GaussMethod(file.A, file.B, file.X, file.N, file.Error);
                     print.PrintDgv(dgv, numericUpDown1);
                     filename = openFileDialog1.FileName;
                 }
@@ -139,7 +143,7 @@ namespace ProjectYAP
                     {
                         button1_Click(sender, e);
                         button2_Click(sender, e);
-                        File file = new File(matrix.A, matrix.B, matrix.X, matrix.N, matrix.Error);
+                        File file = new File(matrix.a, matrix.b, matrix.x, matrix.n, matrix.error);
                         file.Save(saveFileDialog1.FileName);
                     }
                     catch
@@ -163,8 +167,8 @@ namespace ProjectYAP
             string fileName= "Name";
             button1_Click(sender, e);
             button2_Click(sender, e);
-            File file = new File(matrix.A, matrix.B, matrix.X, matrix.N, matrix.Error);
-            Print print = new Print(matrix.A, matrix.B, matrix.X, matrix.N, matrix.Error);
+            File file = new File(matrix.a, matrix.b, matrix.x, matrix.n, matrix.error);
+            Print print = new Print(matrix.a, matrix.b, matrix.x, matrix.n, matrix.error);
             file.Save(fileName);
             try
             {
